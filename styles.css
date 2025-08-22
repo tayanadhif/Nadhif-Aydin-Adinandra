@@ -474,6 +474,7 @@ body {
   width: 100%;
   height: auto;
   object-fit: cover;
+  align-items: center;
 }
 
 .project-badge {
@@ -883,5 +884,6 @@ body {
     flex-direction: column;
   }
 }
+
 
 
