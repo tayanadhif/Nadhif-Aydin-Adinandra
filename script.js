@@ -201,30 +201,82 @@ function isValidEmail(email) {
 function submitForm(data) {
     const submitButton = document.querySelector('.contact-form .btn-primary');
     const successMessage = document.getElementById('successMessage');
+    const errorMessage = document.getElementById('errorMessage');
     
     // Disable submit button and show loading state
     submitButton.disabled = true;
     submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
     
-    // Simulate API call
-    setTimeout(() => {
-        // Reset form
+    // EmailJS configuration
+    const serviceID = 'service_tayanadhif';
+    const templateID = '__ejs-test-mail-service_';
+    const publicKey = '54OIPGetVO3iPbeP_';
+    
+    // Initialize EmailJS
+    emailjs.init(publicKey);
+    
+    // Send email using EmailJS
+    emailjs.send(serviceID, templateID, {
+        user_name: data.name,
+        user_email: data.email,
+        user_subject: data.subject,
+        user_message: data.message,
+        to_name: 'Nadhif Aydin Adinandra',
+        to_email: 'tayanadhif@gmail.com',
+        reply_to: data.email
+    })
+    .then(() => {
+        // Success
         document.getElementById('contactForm').reset();
-        
-        // Show success message
         successMessage.style.display = 'flex';
-        
-        // Reset submit button
-        submitButton.disabled = false;
-        submitButton.innerHTML = '<i class="fas fa-paper-plane"></i> Send Message';
         
         // Hide success message after 5 seconds
         setTimeout(() => {
             successMessage.style.display = 'none';
         }, 5000);
+    })
+    .catch((error) => {
+        // Error
+        console.error('EmailJS Error:', error);
+        showFormError('Failed to send message. Please try again or contact me directly via email.');
+    })
+    .finally(() => {
+        // Reset submit button
+        submitButton.disabled = false;
+        submitButton.innerHTML = '<i class="fas fa-paper-plane"></i> Send Message';
+    });
+}
+
+function showFormError(message) {
+    let errorMessage = document.getElementById('errorMessage');
+    if (!errorMessage) {
+        // Create error message element if it doesn't exist
+        errorMessage = document.createElement('div');
+        errorMessage.id = 'errorMessage';
+        errorMessage.className = 'error-message-form';
+        errorMessage.style.cssText = `
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            margin-top: 1rem;
+        `;
         
-        console.log('Form submitted:', data);
-    }, 2000);
+        const form = document.getElementById('contactForm');
+        form.appendChild(errorMessage);
+    }
+    
+    errorMessage.innerHTML = `<i class="fas fa-exclamation-circle"></i><span>${message}</span>`;
+    errorMessage.style.display = 'flex';
+    
+    // Hide error message after 8 seconds
+    setTimeout(() => {
+        errorMessage.style.display = 'none';
+    }, 8000);
 }
 
 // Skill bar animation
